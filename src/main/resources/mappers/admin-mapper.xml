@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC
+"-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="admin-mapper">
+
+
+ <!-- 계정 자동정지 -->
+ 	<update id="updateMemBlock" parameterType="int">
+	UPDATE MEMBER
+	<set> 
+	USERCODENO = '4' WHERE USERNO = #{userNo}
+   	</set>
+    </update>
+    
+    
+ <!-- 리뷰블라인드 쿼리 -->
+ 	<update id="updateBlindReview" parameterType="int">
+	UPDATE REVIEW
+	<set> 
+	STATUS = 'Y' WHERE USERNO = #{reviewNo}
+   	</set>
+    </update>
+
+
+ <!-- 일반회원 블락해제 -->   
+   <update id="updateUnBlock" parameterType="int">
+	UPDATE MEMBER
+	<set> 
+	USERCODENO = '1' WHERE USERNO = #{userNo}
+   	</set>
+    </update>
+    
+    
+ <!-- 판매자회원 블락해제 -->
+ 	<update id="updateUnBlockS" parameterType="int">
+	UPDATE MEMBER
+	<set> 
+	USERCODENO = '2' WHERE USERNO = #{userNo}
+   	</set>
+    </update>
+    
+    
+ <!-- 판매자회원으로 승격시켜주기 -->
+  	<update id="updateSeller" parameterType="string">
+	UPDATE MEMBER SET USERCODENO = 2 
+	WHERE USERID = #{userId}
+    </update>
+    
+    
+ <!-- 회원삭제쿼리 -->
+   	<update id="deleteMember" parameterType="string">
+	UPDATE MEMBER
+	<set> 
+	USERCODENO = '5' WHERE USERID = #{userId}
+   	</set>
+    </update>
+    
+    
+ <!-- 회원검색쿼리 -->
+ 
+<select id="searchMember" parameterType="MemSearch" resultType="MemSearch">
+
+SELECT M.USERNO, M.USERID, MT.MEMTYPE, M.STATUS 
+FROM MEMBER M
+    JOIN MEMBER_TYPE MT USING (userCodeNo)
+<where>
+<if test="userCodeNo != 0">
+
+AND USERCODENO = #{userCodeNo}
+
+</if>
+
+<if test="searchId != ''">
+
+AND USERID LIKE '%' || #{searchId} || '%'
+
+</if>
+
+</where>
+
+</select>
+
+<!-- 게시글 신고 -->
+
+<insert id="insertReport" parameterType="Report">
+
+INSERT INTO REPORT VALUES 
+						(SEQ_REPORT.NEXTVAL, #{reportCode}, #{userNo},
+						#{rreason}, SYSDATE, #{rreporter}, #{defendant} )
+
+</insert>
+
+
+<select id="selectReportList" resultType="Report">
+
+    SELECT * FROM REPORT
+
+</select>
+
+
+   
+</mapper>
+
+
+
+
+
+
+
+
